@@ -1,4 +1,4 @@
-**PhDice** is a random challenge generator designed to push your photographic boundaries. 
+**FotoDice** is a random challenge generator designed to push your photographic boundaries. 
 
 ### How it works:
 1. **Roll:** Generate your unique photo rules.
