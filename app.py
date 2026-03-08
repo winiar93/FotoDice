@@ -164,7 +164,7 @@ div[data-testid="stButton"] > button:hover {
 .card-row:last-of-type { border-bottom: none; }
 .card-label {
     font-family: 'Space Mono', monospace;
-    font-size: 9px;
+    font-size: 16px;
     letter-spacing: 0.35em;
     text-transform: uppercase;
     min-width: 110px;
@@ -235,11 +235,11 @@ div[data-testid="stButton"] > button:hover {
     margin-bottom: 4px;
 }
 .how-step-desc {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Space Mono', monospace;
     font-size: 13px;
-    color: #5A4530;
-    line-height: 1.6;
-    font-style: italic;
+    color: #B8956A;
+    line-height: 1.8;
+    font-style: normal;
 }
 
 /* ── FILMSTRIP ── */
