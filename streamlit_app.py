@@ -164,7 +164,7 @@ div[data-testid="stButton"] > button:hover {
 .card-row:last-of-type { border-bottom: none; }
 .card-label {
     font-family: 'Space Mono', monospace;
-    font-size: 9px;
+    font-size: 12px;
     letter-spacing: 0.35em;
     text-transform: uppercase;
     min-width: 110px;
