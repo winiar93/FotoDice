@@ -20,7 +20,7 @@ class Color(Enum):
     SEPIA = "Sepia"
 
 
-class Theme(Enum):
+class Subject(Enum):
     GEOMETRY = "Geometry"
     SHADOW = "Shadow"
     REFLECTION = "Reflection"
