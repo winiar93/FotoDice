@@ -1,294 +1,337 @@
 import streamlit as st
 from utils import generate_challange, generate_seed
+from datetime import datetime
 
 st.set_page_config(page_title="FotoDice", page_icon="📸", layout="centered")
 
 # ── CSS ──────────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Space+Mono:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
 
-/* Hide Streamlit chrome */
 #MainMenu, footer, header { visibility: hidden; }
 .stDeployButton { display: none; }
 [data-testid="stToolbar"] { display: none; }
 
-/* Page background */
-.stApp {
-    background: #0D0B09;
-    color: #F0E4C8;
+:root {
+    --bg:        #1C1C1E;
+    --bg-card:   #242426;
+    --bg-lift:   #2C2C2E;
+    --accent:    #FF9500;
+    --accent-hi: #FFB340;
+    --text:      #F5F5F0;
+    --text-muted:#8E8E93;
+    --text-dim:  #48484A;
+    --border:    rgba(245,245,240,0.08);
+    --radius:    12px;
 }
 
-/* Kill default padding */
+.stApp {
+    background: var(--bg);
+    color: var(--text);
+}
 .block-container {
     padding-top: 0 !important;
-    max-width: 520px !important;
+    max-width: 480px !important;
 }
 
-/* ── HEADER ── */
+/* Grain overlay */
+.stApp::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-size: 128px;
+}
+
+/* Header */
 .foto-header {
-    text-align: center;
-    padding: 56px 0 8px;
+    padding: 52px 0 4px;
+    text-align: left;
 }
 .foto-eyebrow {
-    font-family: 'Space Mono', monospace;
+    font-family: 'DM Mono', monospace;
     font-size: 10px;
-    letter-spacing: 0.4em;
-    color: #B8956A;
+    letter-spacing: 0.22em;
+    color: var(--accent);
     text-transform: uppercase;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
 }
 .foto-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 72px;
-    font-weight: 700;
-    color: #E8D5B0;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 56px;
+    font-weight: 600;
+    color: var(--text);
     margin: 0;
-    line-height: 1;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
 }
-.foto-title span { color: #C9A96E; }
+.foto-title span { color: var(--accent); }
 .foto-subtitle {
-    font-family: 'Playfair Display', serif;
-    font-style: italic;
-    font-size: 16px;
-    color: #B8956A;
-    margin-top: 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    color: var(--text-muted);
+    margin-top: 10px;
+    font-weight: 300;
 }
 
-/* ── ROLL BUTTON ── */
+/* Roll button */
 div[data-testid="stButton"] > button {
     width: 100%;
-    background: transparent !important;
-    border: 1.5px solid #C9A96E !important;
-    color: #C9A96E !important;
-    font-family: 'Space Mono', monospace !important;
-    font-size: 13px !important;
-    letter-spacing: 0.25em !important;
+    background: var(--accent) !important;
+    border: none !important;
+    color: #1C1C1E !important;
+    font-family: 'DM Mono', monospace !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.18em !important;
     text-transform: uppercase !important;
-    padding: 18px 0 !important;
-    border-radius: 0 !important;
-    transition: all 0.2s !important;
+    padding: 16px 0 !important;
+    border-radius: var(--radius) !important;
+    transition: background 0.15s, transform 0.1s !important;
 }
 div[data-testid="stButton"] > button:hover {
-    background: #C9A96E !important;
-    color: #0D0B09 !important;
+    background: var(--accent-hi) !important;
+    transform: translateY(-1px) !important;
+}
+div[data-testid="stButton"] > button:active {
+    transform: translateY(0) !important;
 }
 
-/* ── EXPANDER (Have an ID?) ── */
+/* Expander */
 [data-testid="stExpander"] {
-    border: none !important;
-    background: transparent !important;
+    border: 1px solid var(--border) !important;
+    background: var(--bg-card) !important;
+    border-radius: var(--radius) !important;
 }
 [data-testid="stExpander"] summary {
-    font-family: 'Space Mono', monospace;
+    font-family: 'DM Mono', monospace;
     font-size: 11px;
-    letter-spacing: 0.2em;
-    color: #A07850 !important;
+    letter-spacing: 0.15em;
+    color: var(--text-muted) !important;
     text-transform: uppercase;
-    padding: 8px 0 !important;
+    padding: 14px 16px !important;
 }
-[data-testid="stExpander"] summary:hover {
-    color: #C9A96E !important;
-}
+[data-testid="stExpander"] summary:hover { color: var(--text) !important; }
 [data-testid="stExpander"] > div > div {
-    border-top: 1px solid rgba(232,213,176,0.08) !important;
-    padding-top: 16px !important;
+    padding: 0 16px 16px !important;
+    border-top: 1px solid var(--border) !important;
 }
 
-/* ── NUMBER INPUT ── */
+/* Number input */
 [data-testid="stNumberInput"] input {
-    background: #1A1612 !important;
-    border: 1px solid rgba(232,213,176,0.25) !important;
-    border-radius: 0 !important;
-    color: #F0E4C8 !important;
-    font-family: 'Space Mono', monospace !important;
-    font-size: 15px !important;
+    background: var(--bg-lift) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 8px !important;
+    color: var(--text) !important;
+    font-family: 'DM Mono', monospace !important;
+    font-size: 14px !important;
 }
 [data-testid="stNumberInput"] input:focus {
-    border-color: #C9A96E !important;
-    box-shadow: none !important;
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 0 3px rgba(255,149,0,0.12) !important;
 }
 [data-testid="stNumberInput"] label {
-    color: #A89070 !important;
-    font-family: 'Space Mono', monospace !important;
-    font-size: 11px !important;
+    color: var(--text-muted) !important;
+    font-family: 'DM Mono', monospace !important;
+    font-size: 10px !important;
     letter-spacing: 0.15em !important;
     text-transform: uppercase !important;
 }
 [data-testid="stNumberInput"] button {
-    background: #1A1612 !important;
-    border-color: rgba(232,213,176,0.2) !important;
-    color: #A89070 !important;
+    background: var(--bg-lift) !important;
+    border-color: var(--border) !important;
+    color: var(--text-muted) !important;
 }
 
-/* ── CHALLENGE CARD ── */
+/* Challenge card */
 .challenge-card {
-    border: 1px solid rgba(201,169,110,0.3);
-    background: rgba(201,169,110,0.04);
-    padding: 32px 28px;
-    margin: 28px 0;
-    position: relative;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin: 24px 0 0;
 }
-.challenge-card::before,
-.challenge-card::after {
-    content: '';
-    position: absolute;
-    width: 16px;
-    height: 16px;
-}
-.challenge-card::before {
-    top: -1px; left: -1px;
-    border-top: 2px solid #C9A96E;
-    border-left: 2px solid #C9A96E;
-}
-.challenge-card::after {
-    bottom: -1px; right: -1px;
-    border-bottom: 2px solid #C9A96E;
-    border-right: 2px solid #C9A96E;
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-lift);
 }
 .card-id {
-    font-family: 'Space Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.4em;
-    color: #B8956A;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
     text-transform: uppercase;
-    margin-bottom: 24px;
+}
+.card-timestamp {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
 }
 .card-row {
     display: flex;
     justify-content: space-between;
-    align-items: baseline;
-    padding: 12px 0;
-    border-bottom: 1px solid rgba(232,213,176,0.07);
+    align-items: center;
+    padding: 13px 20px;
+    border-bottom: 1px solid var(--border);
 }
 .card-row:last-of-type { border-bottom: none; }
 .card-label {
-    font-family: 'Space Mono', monospace;
-    font-size: 12px;
-    letter-spacing: 0.35em;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
-    min-width: 110px;
+    color: var(--text-muted);
 }
 .card-value {
-    font-family: 'Playfair Display', serif;
-    font-style: italic;
-    font-size: 17px;
-    color: #E8D5B0;
-    text-align: right;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
 }
 
-/* ── HASHTAG BOX ── */
+/* Share */
+.share-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin: 20px 0 8px;
+}
 .hashtag-box {
-    border: 1px solid rgba(232,213,176,0.15);
-    background: rgba(232,213,176,0.03);
-    padding: 14px 18px;
-    margin-top: 8px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
 }
 .hashtag-text {
-    font-family: 'Space Mono', monospace;
+    font-family: 'DM Mono', monospace;
     font-size: 13px;
-    color: #C9A96E;
-}
-.share-label {
-    font-family: 'Space Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.3em;
-    color: #B8956A;
-    text-transform: uppercase;
-    margin-bottom: 10px;
-    margin-top: 24px;
+    color: var(--accent);
 }
 
-/* ── HOW IT WORKS ── */
-.how-section {
-    margin-top: 48px;
-    border-top: 1px solid rgba(232,213,176,0.08);
-    padding-top: 32px;
-}
-.how-title {
-    font-family: 'Space Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.35em;
-    color: #B8956A;
-    text-transform: uppercase;
-    margin-bottom: 24px;
-}
-.how-step {
-    display: flex;
-    gap: 20px;
-    margin-bottom: 20px;
-}
-.how-num {
-    font-family: 'Space Mono', monospace;
-    font-size: 11px;
-    color: #A07850;
-    padding-top: 2px;
-    min-width: 24px;
-}
-.how-step-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 15px;
-    color: #C9A96E;
-    margin-bottom: 4px;
-}
-.how-step-desc {
-    font-family: 'Playfair Display', serif;
-    font-size: 13px;
-    color: #A07850;
-    line-height: 1.6;
-    font-style: italic;
-}
-
-/* ── FILMSTRIP ── */
-.filmstrip {
+/* How it works — compact strip */
+.how-strip {
     display: flex;
     gap: 0;
-    padding: 10px 0;
+    margin: 20px 0 24px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
     overflow: hidden;
-    border-bottom: 2px solid #C9A96E;
-    border-top: 2px solid #C9A96E;
-    margin-bottom: 0;
-    background: #1a1410;
+}
+.how-strip-step {
+    flex: 1;
+    padding: 16px 14px;
+    border-right: 1px solid var(--border);
+    position: relative;
+}
+.how-strip-step:last-child { border-right: none; }
+.how-strip-icon {
+    font-size: 20px;
+    margin-bottom: 8px;
+    display: block;
+}
+.how-strip-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    display: block;
+}
+.how-strip-title {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+}
+.how-strip-desc {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.45;
+    font-weight: 300;
+}
+
+/* Filmstrip */
+.filmstrip {
+    display: flex;
+    padding: 8px 0;
+    overflow: hidden;
+    border-bottom: 2px solid rgba(255,149,0,0.2);
+    border-top: 2px solid rgba(255,149,0,0.2);
+    background: #161618;
 }
 .filmstrip-hole {
-    width: 14px;
-    height: 22px;
+    width: 12px;
+    height: 18px;
     border-radius: 3px;
-    background: #0D0B09;
-    border: 1.5px solid #C9A96E;
+    background: var(--bg);
+    border: 1px solid rgba(255,149,0,0.15);
     display: inline-block;
     margin: 0 5px;
     flex-shrink: 0;
-    opacity: 0.7;
 }
 </style>
 """, unsafe_allow_html=True)
 
-# ── FILMSTRIP TOP ──────────────────────────────────────────────────────────
+# ── FILMSTRIP ─────────────────────────────────────────────────────────────
 holes = '<div class="filmstrip">' + '<span class="filmstrip-hole"></span>' * 40 + '</div>'
 st.markdown(f'<div style="background:#111;margin:-1rem -1rem 0">{holes}</div>', unsafe_allow_html=True)
 
 # ── HEADER ────────────────────────────────────────────────────────────────
 st.markdown("""
 <div class="foto-header">
-    <div class="foto-eyebrow">— a photographer's dice —</div>
+    <div class="foto-eyebrow">⚡ a photographer's dice</div>
     <h1 class="foto-title">Foto<span>Dice</span></h1>
-    <p class="foto-subtitle">Roll the rules.&ensp;Shoot the photo.</p>
+    <p class="foto-subtitle">Roll your shot parameters — format, color, subject, time of day — then go shoot.</p>
 </div>
 """, unsafe_allow_html=True)
 
-st.markdown("<div style='height:32px'></div>", unsafe_allow_html=True)
+st.markdown("<div style='height:28px'></div>", unsafe_allow_html=True)
 
 # ── SESSION STATE ──────────────────────────────────────────────────────────
 if "result" not in st.session_state:
     st.session_state.result = None
     st.session_state.seed = None
 
+# ── HOW IT WORKS STRIP (always visible) ───────────────────────────────────
+st.markdown("""
+<div class="how-strip">
+    <div class="how-strip-step">
+        <span class="how-strip-icon">🎲</span>
+        <span class="how-strip-num">01 · Roll</span>
+        <div class="how-strip-title">Get your challenge</div>
+        <div class="how-strip-desc">Format, color, subject & time of day — all randomized in one click.</div>
+    </div>
+    <div class="how-strip-step">
+        <span class="how-strip-icon">📷</span>
+        <span class="how-strip-num">02 · Shoot</span>
+        <div class="how-strip-title">Go out & shoot</div>
+        <div class="how-strip-desc">Let the rules guide you. Constraints breed creativity.</div>
+    </div>
+    <div class="how-strip-step">
+        <span class="how-strip-icon">🏷️</span>
+        <span class="how-strip-num">03 · Share</span>
+        <div class="how-strip-title">Post your shot</div>
+        <div class="how-strip-desc">Tag your ID so others can try the same roll.</div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
 # ── ROLL BUTTON ───────────────────────────────────────────────────────────
-if st.button("🎲  Roll the Dice", use_container_width=True):
+if st.button("⚡  Roll the Dice", use_container_width=True):
     seed = generate_seed()
     st.session_state.result = generate_challange(seed)
     st.session_state.seed = seed
@@ -308,55 +351,35 @@ with st.expander("↳  Have a Challenge ID?"):
         st.session_state.seed = challenge_id
 
 # ── CHALLENGE CARD ────────────────────────────────────────────────────────
-LABEL_COLORS = ["#E8D5B0", "#C9A96E", "#C9956A", "#C9A96E", "#E8D5B0"]
-
 if st.session_state.result:
     result = st.session_state.result
     seed = st.session_state.seed
+    now = datetime.now().strftime("%Y-%m-%d  %H:%M")
 
     fields = ["Format", "Orientation", "Color", "Subject", "Time of Day"]
 
-    st.markdown(f'<div class="challenge-card"><div class="card-id">Challenge #{seed}</div>' + 
-        "".join([
-            f'<div class="card-row"><span class="card-label" style="color:{LABEL_COLORS[i]}">{key}</span><span class="card-value">{result[key]}</span></div>'
-            for i, key in enumerate(fields)
-        ]) + '</div>', unsafe_allow_html=True)
+    rows_html = "".join([
+        f'<div class="card-row"><span class="card-label">{key}</span><span class="card-value">{result[key]}</span></div>'
+        for key in fields
+    ])
 
-    # Share
-    st.markdown('<div class="share-label">Share your shot</div>', unsafe_allow_html=True)
+    st.markdown(f"""
+    <div class="challenge-card">
+        <div class="card-header">
+            <span class="card-id">#{seed}</span>
+            <span class="card-timestamp">{now}</span>
+        </div>
+        <div class="card-body">
+            {rows_html}
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
     tags = f"#FotoDice #FotoDice{seed}"
+    st.markdown('<div class="share-label">Share your shot</div>', unsafe_allow_html=True)
     st.markdown(f"""
     <div class="hashtag-box">
         <span class="hashtag-text">{tags}</span>
     </div>
     """, unsafe_allow_html=True)
     st.code(tags, language=None)
-
-# ── HOW IT WORKS ──────────────────────────────────────────────────────────
-if not st.session_state.result:
-    st.markdown("""
-    <div class="how-section">
-        <div class="how-title">How it works</div>
-        <div class="how-step">
-            <span class="how-num">01</span>
-            <div>
-                <div class="how-step-title">Roll</div>
-                <div class="how-step-desc">Generate your unique combination of format, orientation, color, theme and time of day.</div>
-            </div>
-        </div>
-        <div class="how-step">
-            <span class="how-num">02</span>
-            <div>
-                <div class="how-step-title">Shoot</div>
-                <div class="how-step-desc">Take photos guided by these rules. Limitations breed creativity.</div>
-            </div>
-        </div>
-        <div class="how-step">
-            <span class="how-num">03</span>
-            <div>
-                <div class="how-step-title">Share</div>
-                <div class="how-step-desc">Post with your Challenge ID so others can attempt the same roll.</div>
-            </div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
