@@ -34,7 +34,7 @@ st.markdown("""
     font-family: 'Space Mono', monospace;
     font-size: 10px;
     letter-spacing: 0.4em;
-    color: #7A5C3A;
+    color: #B8956A;
     text-transform: uppercase;
     margin-bottom: 12px;
 }
@@ -51,7 +51,7 @@ st.markdown("""
     font-family: 'Playfair Display', serif;
     font-style: italic;
     font-size: 16px;
-    color: #7A5C3A;
+    color: #B8956A;
     margin-top: 14px;
 }
 
@@ -83,7 +83,7 @@ div[data-testid="stButton"] > button:hover {
     font-family: 'Space Mono', monospace;
     font-size: 11px;
     letter-spacing: 0.2em;
-    color: #5A4530 !important;
+    color: #A07850 !important;
     text-transform: uppercase;
     padding: 8px 0 !important;
 }
@@ -150,7 +150,7 @@ div[data-testid="stButton"] > button:hover {
     font-family: 'Space Mono', monospace;
     font-size: 10px;
     letter-spacing: 0.4em;
-    color: #7A5C3A;
+    color: #B8956A;
     text-transform: uppercase;
     margin-bottom: 24px;
 }
@@ -196,7 +196,7 @@ div[data-testid="stButton"] > button:hover {
     font-family: 'Space Mono', monospace;
     font-size: 10px;
     letter-spacing: 0.3em;
-    color: #7A5C3A;
+    color: #B8956A;
     text-transform: uppercase;
     margin-bottom: 10px;
     margin-top: 24px;
@@ -212,7 +212,7 @@ div[data-testid="stButton"] > button:hover {
     font-family: 'Space Mono', monospace;
     font-size: 10px;
     letter-spacing: 0.35em;
-    color: #7A5C3A;
+    color: #B8956A;
     text-transform: uppercase;
     margin-bottom: 24px;
 }
@@ -224,7 +224,7 @@ div[data-testid="stButton"] > button:hover {
 .how-num {
     font-family: 'Space Mono', monospace;
     font-size: 11px;
-    color: #5A4530;
+    color: #A07850;
     padding-top: 2px;
     min-width: 24px;
 }
@@ -237,7 +237,7 @@ div[data-testid="stButton"] > button:hover {
 .how-step-desc {
     font-family: 'Playfair Display', serif;
     font-size: 13px;
-    color: #5A4530;
+    color: #A07850;
     line-height: 1.6;
     font-style: italic;
 }
@@ -246,20 +246,23 @@ div[data-testid="stButton"] > button:hover {
 .filmstrip {
     display: flex;
     gap: 0;
-    padding: 8px 0;
+    padding: 10px 0;
     overflow: hidden;
-    border-bottom: 1px solid rgba(232,213,176,0.06);
+    border-bottom: 2px solid #C9A96E;
+    border-top: 2px solid #C9A96E;
     margin-bottom: 0;
+    background: #1a1410;
 }
 .filmstrip-hole {
     width: 14px;
-    height: 20px;
+    height: 22px;
     border-radius: 3px;
     background: #0D0B09;
-    border: 1px solid rgba(232,213,176,0.12);
+    border: 1.5px solid #C9A96E;
     display: inline-block;
     margin: 0 5px;
     flex-shrink: 0;
+    opacity: 0.7;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -305,13 +308,13 @@ with st.expander("↳  Have a Challenge ID?"):
         st.session_state.seed = challenge_id
 
 # ── CHALLENGE CARD ────────────────────────────────────────────────────────
-LABEL_COLORS = ["#E8D5B0", "#C9A96E", "#A67C52", "#C9A96E", "#E8D5B0"]
+LABEL_COLORS = ["#E8D5B0", "#C9A96E", "#C9956A", "#C9A96E", "#E8D5B0"]
 
 if st.session_state.result:
     result = st.session_state.result
     seed = st.session_state.seed
 
-    fields = ["Format", "Orientation", "Color", "Theme", "Time of Day"]
+    fields = ["Format", "Orientation", "Color", "Subject", "Time of Day"]
 
     st.markdown(f'<div class="challenge-card"><div class="card-id">Challenge #{seed}</div>' + 
         "".join([
