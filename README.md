@@ -9,4 +9,4 @@
 
 Roll your first challenge!
 
-[phdice.streamlit.app](https://phdice.streamlit.app/)
+[phdice.streamlit.app](https://fotodice.streamlit.app/)
